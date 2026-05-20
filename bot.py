@@ -1,4 +1,7 @@
 import asyncio
+from flask import Flask
+from threading import Thread
+import os
 
 from config import BOT_TOKEN
 from db import save_to_db, create_table
@@ -17,6 +20,19 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.memory import MemoryStorage
+
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "Bot is alive!"
+
+def run():
+    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 10000)))
+
+def keep_alive():
+    t = Thread(target=run)
+    t.start()
 
 # =========================
 # BOT
@@ -460,6 +476,7 @@ async def main():
 
 
 if __name__ == "__main__":
+    keep_alive()
     asyncio.run(main())
 
 
