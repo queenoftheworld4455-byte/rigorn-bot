@@ -89,7 +89,7 @@ texts = {
           "Абу-Даби"
         ],
         
-        "budget": "3/6. Бюджет (например: 5 000 000 ₽)?",
+        "budget": "3/6.Бюджет (например: 5 000000 доллар $)?",
 
         "payment": "4/6. Способ оплаты?",
 
@@ -144,7 +144,7 @@ Fill out the short form, and a manager will contact you to discuss your needs.""
           "Abu Dhabi"
         ],
 
-        "budget": "3/6. Budget (for example: 5,000,000 ₽)?",
+        "budget": "3/6.Budget (for example: 5,000,000 dollars $)?",
 
         "payment": "4/6. Payment method?",
 
