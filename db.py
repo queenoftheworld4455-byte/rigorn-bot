@@ -4,8 +4,10 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-engine = create_engine(DATABASE_URL)
-
+engine = create_engine(
+    DATABASE_URL,
+    connect_args={"sslmode": "require"}
+)
 
 def create_table():
     with engine.begin() as conn:
@@ -45,4 +47,19 @@ def save_to_db(data):
             })
 
     except Exception as e:
+        print(e)
         logger.error(f"DB insert failed: {e}")
+        
+ #--------------test
+create_table()
+
+save_to_db({
+    "lang": "en",
+    "interest": "test",
+    "city": "Berlin",
+    "budget": "1000",
+    "payment": "crypto",
+    "phone": "123",
+    "extra": "hello"
+})
+        
