@@ -50,16 +50,6 @@ def save_to_db(data):
         print(e)
         logger.error(f"DB insert failed: {e}")
         
- #--------------test
-create_table()
 
-save_to_db({
-    "lang": "en",
-    "interest": "test",
-    "city": "Berlin",
-    "budget": "1000",
-    "payment": "crypto",
-    "phone": "123",
-    "extra": "hello"
-})
+
         
