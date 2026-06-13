@@ -25,6 +25,44 @@ def create_table():
             )
         """))
 
+def create_files_table():
+    with engine.begin() as conn:
+        conn.execute(text("""
+        CREATE TABLE IF NOT EXISTS files (
+            id SERIAL PRIMARY KEY,
+            code TEXT UNIQUE,
+            file_id TEXT,
+            created_at TIMESTAMP DEFAULT NOW()
+        )
+        """))
+        
+def save_file(code, file_id):
+    with engine.begin() as conn:
+        conn.execute(
+            text("""
+            INSERT INTO files (code, file_id)
+            VALUES (:code, :file_id)
+            ON CONFLICT (code)
+            DO UPDATE SET file_id = :file_id
+            """),
+            {
+                "code": code,
+                "file_id": file_id
+            }
+        )
+
+def get_file(code):
+    with engine.begin() as conn:
+        result = conn.execute(
+            text("""
+            SELECT file_id
+            FROM files
+            WHERE code=:code
+            """),
+            {"code": code}
+        ).fetchone()
+
+    return result[0] if result else None
 
 def save_to_db(data):
     query = text("""

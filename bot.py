@@ -4,7 +4,7 @@ from threading import Thread
 import os
 
 from config import BOT_TOKEN
-from db import save_to_db, create_table
+from db import save_to_db, create_table, create_files_table, save_file, get_file
 from aiogram import Bot, Dispatcher, F
 from aiogram.enums import ParseMode
 from aiogram.types import (
@@ -45,6 +45,42 @@ bot = Bot(
 
 dp = Dispatcher(storage=MemoryStorage())
 
+ADMINS = [
+    6362983797,
+    1050628887
+]
+
+# =========================
+# FILE UPLOAD
+# =========================
+
+@dp.message(F.document)
+async def upload_file(message: Message):
+
+    if message.from_user.id not in ADMINS:
+        return
+
+    code = message.caption
+
+    if not code:
+        await message.answer(
+            "کد فایل را در کپشن بنویس.\n\nمثال:\nguide1"
+        )
+        return
+
+    file_id = message.document.file_id
+
+    save_file(code, file_id)
+
+    deep_link = (
+        f"https://t.me/Rigorn_bot?start={code}"
+    )
+
+    await message.answer(
+        f"✅ فایل ذخیره شد.\n\n"
+        f"کد: {code}\n\n"
+        f"لینک:\n{deep_link}"
+    )
 
 # =========================
 # STATES
@@ -181,9 +217,27 @@ https://t.me/rigorn_invest"""
 # START
 # =========================
 
-@dp.message(F.text == "/start")
-async def start_handler(message: Message, state: FSMContext):
+@dp.message(F.text.startswith("/start"))
+async def start_handler(
+    message: Message,
+    state: FSMContext):
 
+    parts = message.text.split()
+
+    if len(parts) > 1:
+
+     code = parts[1]
+
+    file_id = get_file(code)
+
+    if file_id:
+
+     await message.answer_document(
+            document=file_id
+        )
+
+     return
+    
     kb = InlineKeyboardMarkup(
         inline_keyboard=[
             [
@@ -470,7 +524,8 @@ async def request_text_handler(message: Message, state: FSMContext):
 async def main():
 
     create_table()
-
+    create_files_table()
+    
     print("Bot started...")
     await dp.start_polling(bot)
 
