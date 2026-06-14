@@ -57,6 +57,8 @@ ADMINS = [
 @dp.message(F.document)
 async def upload_file(message: Message):
 
+    print("FILE RECEIVED")
+
     if message.from_user.id not in ADMINS:
         return
 
@@ -71,6 +73,9 @@ async def upload_file(message: Message):
     file_id = message.document.file_id
 
     save_file(code, file_id)
+
+    print(code)
+    print(file_id)
 
     deep_link = (
         f"https://t.me/Rigorn_bot?start={code}"
@@ -218,26 +223,24 @@ https://t.me/rigorn_invest"""
 # =========================
 
 @dp.message(F.text.startswith("/start"))
-async def start_handler(
-    message: Message,
-    state: FSMContext):
+async def start_handler(message: Message, state: FSMContext):
 
     parts = message.text.split()
 
     if len(parts) > 1:
 
-     code = parts[1]
+        code = parts[1]
 
-    file_id = get_file(code)
+        file_id = get_file(code)
 
-    if file_id:
+        if file_id:
 
-     await message.answer_document(
-            document=file_id
-        )
+            await message.answer_document(
+                document=file_id
+            )
 
-     return
-    
+            return
+
     kb = InlineKeyboardMarkup(
         inline_keyboard=[
             [
@@ -516,7 +519,7 @@ async def request_text_handler(message: Message, state: FSMContext):
     )
 
     await state.clear()
-
+    
 # =========================
 # MAIN
 # =========================
@@ -525,8 +528,9 @@ async def main():
 
     create_table()
     create_files_table()
-    
-    print("Bot started...")
+
+    print("Tables created")
+
     await dp.start_polling(bot)
 
 
