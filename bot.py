@@ -100,6 +100,8 @@ class Form(StatesGroup):
     extra = State()
     request_text = State()
 
+    catalog_phone = State()
+
 
 # =========================
 # TEXTS
@@ -188,8 +190,7 @@ Fill out the short form, and a manager will contact you to discuss your needs.""
         "budget": "3/6.Budget (for example: 5,000,000 dollars $)?",
 
         "payment": "4/6. Payment method?",
-
-        "payment_buttons": [
+ "payment_buttons": [
             "Installment",
             "Cash / Full payment"
         ],
@@ -384,8 +385,6 @@ async def budget_handler(message: Message, state: FSMContext):
     )
 
     await state.set_state(Form.payment)
-
-
 # =========================
 # PAYMENT
 # =========================
