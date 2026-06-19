@@ -2,6 +2,7 @@ import asyncio
 from flask import Flask
 from threading import Thread
 import os
+import re
 
 from config import BOT_TOKEN
 from db import save_to_db, create_table, create_files_table, save_file, get_file
@@ -339,7 +340,7 @@ async def get_catalog(
 ):
 
     await callback.message.answer_photo(
-        photo="YOUR_PHOTO_ID",
+photo="AgACAgUAAxkBAAIPGGo1JYTZ2VeQXlu-_C7OVlZFWGQkAAKCEWsbHvmoVR5nDQZreREWAQADAgADdwADPAQ",
         caption="""
 Введите ваш номер телефона.
 
@@ -367,6 +368,49 @@ async def get_catalog(
 
     await state.set_state(Form.catalog_phone)
     await callback.answer()
+    
+# =========================
+# CATALOG PHONE
+# =========================
+
+@dp.message(Form.catalog_phone)
+async def catalog_phone(
+    message: Message,
+    state: FSMContext
+):
+    
+    
+
+    phone = ""
+
+    if message.contact:
+       phone = message.contact.phone_number
+
+    else:
+       phone = message.text.strip()
+
+       if not re.fullmatch(
+        r"\+?\d+",
+        phone
+    ):
+        await message.answer(
+            "Введите только цифры и знак +"
+        )
+        return
+
+    data = await state.get_data()
+
+    code = data.get("catalog_code")
+
+    file_id = get_file(code)
+
+    if file_id:
+
+       await message.answer_document(
+           document=file_id
+       )
+
+    await state.clear()
 
 # =========================
 # INTEREST
