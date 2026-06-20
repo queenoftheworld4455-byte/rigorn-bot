@@ -36,6 +36,51 @@ def create_files_table():
         )
         """))
         
+def create_leads_table():
+   with engine.begin() as conn:
+        conn.execute(text("""
+        CREATE TABLE IF NOT EXISTS brochure_leads (
+            id SERIAL PRIMARY KEY,
+            created_at TIMESTAMP DEFAULT NOW(),
+            telegram_id BIGINT,
+            username TEXT,
+            phone TEXT,
+            brochure_code TEXT
+        )
+        """)) 
+        
+def save_lead(
+    telegram_id,
+    username,
+    phone,
+    brochure_code
+):
+    with engine.begin() as conn:
+        conn.execute(
+            text("""
+            INSERT INTO brochure_leads
+            (
+                telegram_id,
+                username,
+                phone,
+                brochure_code
+            )
+            VALUES
+            (
+                :telegram_id,
+                :username,
+                :phone,
+                :brochure_code
+            )
+            """),
+            {
+                "telegram_id": telegram_id,
+                "username": username,
+                "phone": phone,
+                "brochure_code": brochure_code
+            }
+        )
+        
 def save_file(code, file_id):
     with engine.begin() as conn:
         conn.execute(

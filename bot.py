@@ -5,7 +5,7 @@ import os
 import re
 
 from config import BOT_TOKEN
-from db import save_to_db, create_table, create_files_table, save_file, get_file
+from db import save_to_db, create_table, create_files_table, save_file, get_file,create_leads_table,save_lead
 from aiogram import Bot, Dispatcher, F
 from aiogram.enums import ParseMode
 from aiogram.types import (
@@ -421,9 +421,15 @@ async def catalog_phone(
         return
 
     data = await state.get_data()
-
     code = data.get("catalog_code")
-
+    
+    save_lead(
+        telegram_id=message.from_user.id,
+        username=message.from_user.username,
+        phone=phone,
+        brochure_code=data.get("catalog_code")
+    )
+    
     file_id = get_file(code)
 
     if file_id:
@@ -661,6 +667,7 @@ async def main():
 
     create_table()
     create_files_table()
+    create_leads_table()
 
     print("Tables created")
 
