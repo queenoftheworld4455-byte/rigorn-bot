@@ -248,28 +248,25 @@ https://t.me/rigorn_invest"""
 async def start_handler(message: Message, state: FSMContext):
 
     parts = message.text.split()
+    code = parts[1] if len(parts) > 1 else None
 
-    if len(parts) > 1:
-
-        code = parts[1]
-
+    if code:
         file_id = get_file(code)
 
         if file_id:
+            await state.update_data(catalog_code=code)
 
-            await state.update_data(
-                catalog_code=code
-            )
-
-            username = (
-                message.from_user.first_name
-                or "Investor"
-            )
+            username = message.from_user.first_name or "Investor"
 
             brochure_text = BROCHURE_TEXTS.get(
                 code,
                 "Каталог доступен по кнопке ниже."
             )
+
+            text = f"""Здравствуйте, {username}
+
+{brochure_text}
+"""
 
             kb = InlineKeyboardMarkup(
                 inline_keyboard=[
@@ -282,25 +279,15 @@ async def start_handler(message: Message, state: FSMContext):
                 ]
             )
 
-            await message.answer(
-                f"Здравствуйте, {username}\n\n{brochure_text}",
-                reply_markup=kb
-            )
-
+            await message.answer(text, reply_markup=kb)
             return
 
-    # فرم اصلی
+    # اگر deep link نبود → انتخاب زبان
     kb = InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(
-                    text="Русский",
-                    callback_data="lang_ru"
-                ),
-                InlineKeyboardButton(
-                    text="English",
-                    callback_data="lang_en"
-                )
+                InlineKeyboardButton(text="Русский", callback_data="lang_ru"),
+                InlineKeyboardButton(text="English", callback_data="lang_en")
             ]
         ]
     )
@@ -664,6 +651,8 @@ async def main():
     create_leads_table()
 
     print("Tables created")
+
+    await bot.delete_webhook(drop_pending_updates=True)
 
     await dp.start_polling(bot)
 
