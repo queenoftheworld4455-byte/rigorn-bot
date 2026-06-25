@@ -251,50 +251,45 @@ async def start_handler(message: Message, state: FSMContext):
 
     if len(parts) > 1:
 
-       code = parts[1]
+        code = parts[1]
 
-    file_id = get_file(code)
+        file_id = get_file(code)
 
-    if file_id:
+        if file_id:
 
-        await state.update_data(
-            catalog_code=code
-        )
+            await state.update_data(
+                catalog_code=code
+            )
 
-        username = (
-            message.from_user.first_name
-            or "Investor"
-        )
+            username = (
+                message.from_user.first_name
+                or "Investor"
+            )
 
-        brochure_text = BROCHURE_TEXTS.get(
-        code,
-        "Каталог доступен по кнопке ниже."
-        )
+            brochure_text = BROCHURE_TEXTS.get(
+                code,
+                "Каталог доступен по кнопке ниже."
+            )
 
-        text = f"""
-Здравствуйте, {username}
-
-{brochure_text}
-"""
-
-        kb = InlineKeyboardMarkup(
-            inline_keyboard=[
-                [
-                    InlineKeyboardButton(
-                        text="Получить каталог",
-                        callback_data="get_catalog"
-                    )
+            kb = InlineKeyboardMarkup(
+                inline_keyboard=[
+                    [
+                        InlineKeyboardButton(
+                            text="Получить каталог",
+                            callback_data="get_catalog"
+                        )
+                    ]
                 ]
-            ]
-        )
+            )
 
-        await message.answer(
-            text,
-            reply_markup=kb
-        )
+            await message.answer(
+                f"Здравствуйте, {username}\n\n{brochure_text}",
+                reply_markup=kb
+            )
 
-        return
+            return
 
+    # فرم اصلی
     kb = InlineKeyboardMarkup(
         inline_keyboard=[
             [
@@ -314,7 +309,6 @@ async def start_handler(message: Message, state: FSMContext):
         "Please choose your language:\nПожалуйста, выберите язык:",
         reply_markup=kb
     )
-
 
 # =========================
 # LANGUAGE SELECT
